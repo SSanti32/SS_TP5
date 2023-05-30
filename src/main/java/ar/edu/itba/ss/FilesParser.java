@@ -88,8 +88,8 @@ public class FilesParser {
                 .append("Generation: ")
                 .append(String.valueOf(time))
                 .append("\n");
-        writeCollectionToFileLines(writer, holesList);
-        writeCollectionToFileLines(writer, ballsList);
+//        writeCollectionToFileLines(writer, holesList);
+//        writeCollectionToFileLines(writer, ballsList);
     }
 
     public static void writePositionsFile(String filename, Map<Long, List<double[]>> ballsPositions) {
