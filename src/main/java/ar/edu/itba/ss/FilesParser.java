@@ -56,27 +56,27 @@ public class FilesParser {
         }
     }
 
-    private static void writeCollectionToFileLines(BufferedWriter writer,
-                                                   List<Particle> list)
-            throws IOException {
-        for (Particle ball : list) {
-            // TODO: Check correct format for Ovito (moving balls)
-            writer.append(String.valueOf(ball.getX()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getY()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getVx()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getVy()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getRadius()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getMass()))
-                    .append("\t")
-                    .append(String.valueOf(ball.getSymbol()))
-                    .append("\n");
-        }
-    }
+//    private static void writeCollectionToFileLines(BufferedWriter writer,
+//                                                   List<Particle> list)
+//            throws IOException {
+//        for (Particle ball : list) {
+//            // TODO: Check correct format for Ovito (moving balls)
+//            writer.append(String.valueOf(ball.getX()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getY()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getVx()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getVy()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getRadius()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getMass()))
+//                    .append("\t")
+//                    .append(String.valueOf(ball.getSymbol()))
+//                    .append("\n");
+//        }
+//    }
 
     private static void writeAnimationFileLines(int time, BufferedWriter writer,
                                                 List<Particle> ballsList,
@@ -118,23 +118,23 @@ public class FilesParser {
         fileWriter.close();
     }
 
-    public static void writeInitialPositions(File filePath, List<Particle> balls) {
-        try (BufferedWriter writer =
-                     new BufferedWriter(new FileWriter(filePath, true))) {
-            for (Particle ball : balls) {
-                writer.append(String.valueOf(ball.getId()))
-                        .append(": ")
-                        .append(String.valueOf(ball.getX()))
-                        .append("\t")
-                        .append(String.valueOf(ball.getY()))
-                        .append("\n");
-            }
-            writer.append("\n");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
+//    public static void writeInitialPositions(File filePath, List<Particle> balls) {
+//        try (BufferedWriter writer =
+//                     new BufferedWriter(new FileWriter(filePath, true))) {
+//            for (Particle ball : balls) {
+//                writer.append(String.valueOf(ball.getId()))
+//                        .append(": ")
+//                        .append(String.valueOf(ball.getX()))
+//                        .append("\t")
+//                        .append(String.valueOf(ball.getY()))
+//                        .append("\n");
+//            }
+//            writer.append("\n");
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
     // Funcion para crear un archivo en el directorio especificado
     public static File creatingFile(String fileName, String directoryPath) {
