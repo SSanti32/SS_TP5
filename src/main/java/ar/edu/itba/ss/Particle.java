@@ -1,6 +1,12 @@
 package ar.edu.itba.ss;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+
 public class Particle {
+    private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
+    long id;
     double minRadius, radius, maxRadius;
     double velocity, escapeVel;
     double x, y;
