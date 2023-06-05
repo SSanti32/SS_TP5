@@ -11,6 +11,7 @@ public class Main {
 
     private static double currentTime = 0;
     public static List<Particle> particles = new ArrayList<>();
+    public static List<Particle> corners = new ArrayList<>();
     public static List<Particle> particlesToRemove = new ArrayList<>();
 
     public static void initializeRoom() {
@@ -23,6 +24,12 @@ public class Main {
                 i++;
             }
         }
+        corners.add(new Particle(0, 0, Utils.minRadius, 0));
+        corners.add(new Particle(0, Utils.wallLength, Utils.minRadius, 0));
+        corners.add(new Particle(Utils.wallLength, 0, Utils.minRadius, 0));
+        corners.add(new Particle(Utils.wallLength, Utils.wallLength, Utils.minRadius, 0));
+        corners.add(new Particle(Utils.secondTargetX1, Utils.secondTargetY, Utils.minRadius, 0));
+        corners.add(new Particle(Utils.secondTargetX2, Utils.secondTargetY, Utils.minRadius, 0));
     }
 
     public static boolean isOverlapping(Particle p1) {
@@ -37,9 +44,15 @@ public class Main {
     public static void main(String[] args) throws IOException {
         initializeRoom();
         FileWriter fileWriter = new FileWriter(FILENAME, true);
-        fileWriter.write(Utils.particleCount + "\n");
+        fileWriter.write((particles.size() + corners.size()) + "\n");
         fileWriter.write("Comment" + "\n");
         for(Particle p: particles) {
+            fileWriter.write(p.getX() + "\t");
+            fileWriter.write(p.getY() + "\t");
+            fileWriter.write(p.getRadius() + "\t");
+            fileWriter.write("He" + "\n");
+        }
+        for(Particle p: corners) {
             fileWriter.write(p.getX() + "\t");
             fileWriter.write(p.getY() + "\t");
             fileWriter.write(p.getRadius() + "\t");
@@ -50,87 +63,46 @@ public class Main {
     }
 
     private static void simulate(FileWriter fileWriter) throws IOException {
-        int toPrint = 1;
-        while (particles.size() > 0 && currentTime < 100) {
+        int toPrint = 0;
+        while (particles.size() > 0 && currentTime < 500) {
 
-            // Find contacts and calculate escape velocity
-            for(Particle p1 : particles) {
-                double eij_x = 0;
-                double eij_y = 0;
+            // Find contacts
+            for (Particle p1 : particles) {
+                Set<Particle> contacts = new HashSet<>();
                 for (Particle p2 : particles) {
-                    if (p1.equals(p2) && Utils.getParticleDistance(p1, p2) >= p1.getRadius() + p2.getRadius()) {
+                    if (p1.equals(p2) || Utils.getParticleDistance(p1, p2) > p1.getRadius() + p2.getRadius()) {
                         continue;
                     }
-                    double[] currentEij = p1.getEscapeVelocityDirAndSense(p2);
-                    eij_x += currentEij[0];
-                    eij_y += currentEij[1];
+                    contacts.add(p2);
                 }
-
-                // Interaction with walls
-                if (!p1.hasLeftBox) {
-                    // Left wall
-                    if (p1.getX() - p1.getRadius() <= 0) {
-                        eij_x += p1.getX() / Math.sqrt(Math.pow(p1.getX(), 2) + Math.pow(p1.getY(), 2));
-                    }
-
-                    // Right wall
-                    if (p1.getX() + p1.getRadius() >= Utils.wallLength) {
-                        eij_x += (p1.getX() - Utils.wallLength) / Math.sqrt(Math.pow(Utils.wallLength - p1.getX(), 2) + Math.pow(p1.getY(), 2));
-                    }
-
-                    // Bottom wall
-                    if (p1.getY() - p1.getRadius() <= 0) {
-                        if (p1.getX() >= Utils.x_e1 + 0.1 && p1.getX() <= Utils.x_e2 - 0.1) {
-                            p1.setHasLeftBox(true);
-                        } else {
-                            eij_y += p1.getY() / Math.sqrt(Math.pow(p1.getX(), 2) + Math.pow(p1.getY(), 2));
-                        }
-                    }
-
-                    // Top wall
-                    if (p1.getY() + p1.getRadius() >= Utils.wallLength) {
-                        eij_y += (p1.getY() - Utils.wallLength) / Math.sqrt(Math.pow(p1.getX(), 2) + Math.pow(Utils.wallLength - p1.getY(), 2));
-                    }
-                }
-
-                double distanceEij = Math.sqrt(Math.pow(eij_x, 2) + Math.pow(eij_y, 2));
-                p1.setVe(new double[]{eij_x / distanceEij, eij_y / distanceEij});
-                if (eij_x != 0 || eij_y != 0) {
-                    p1.setInContact(true);
-                }
+                p1.setContacts(contacts);
+                p1.calculateWallContacts();
             }
 
             // Adjust radii
             for (Particle p : particles) {
-                if (p.isInContact()) {
+                if (p.getContacts().size() > 0 || p.getWallsInContact().size() > 0) {
                     p.setRadius(Utils.minRadius);
                 } else {
-                    p.updateRadius();
+//                    if (p.radius < Utils.maxRadius)
+                        p.updateRadius();
                 }
             }
 
             // Update positions and velocities
             for (Particle p : particles) {
-                // Compute direction and sense of vd considering current positions and target locations
-                // Compute magnitude of vd depending on the radius
-                if (p.isInContact()) {
-                    p.setV(new double[]{p.getVe()[0] * Utils.maxDesiredSpeed, p.getVe()[1] * Utils.maxDesiredSpeed});
-                } else {
-                    p.calculateDesiredVelocity();
-                    p.setV(new double[]{p.getVd()[0], p.getVd()[1]});
-                }
-
-                // Update position
-                p.setX(p.getX() + p.getV()[0] * Utils.step);
-                p.setY(p.getY() + p.getV()[1] * Utils.step);
+                p.calculateVelocity();
+                p.calculatePosition();
+                // Recalculate target
+                if (p.hasLeftBox)
+                    p.calculateTargetOutsideRoom();
+                else
+                    p.calculateTarget();
             }
 
             // Check if particles have left the room
             for (Particle p : particles) {
-                if (p.hasLeftBox && p.getY() - p.radius <= Utils.targetY
-                        && p.getX() >= Utils.secondTargetX1
-                        && p.getX() <= Utils.secondTargetX2) {
-                    p.setInContact(false);
+                if (p.hasLeftBox && p.getY() - p.radius <= Utils.secondTargetY) {
                     particlesToRemove.add(p);
                 }
             }
@@ -141,9 +113,15 @@ public class Main {
             // Update time
             currentTime += Utils.step;
             if (toPrint % 10 == 0) {
-                fileWriter.write(particles.size() + "\n");
+                fileWriter.write((particles.size() + corners.size()) + "\n");
                 fileWriter.write("Comment" + "\n");
                 for(Particle p: particles) {
+                    fileWriter.write(p.getX() + "\t");
+                    fileWriter.write(p.getY() + "\t");
+                    fileWriter.write(Utils.minRadius + "\t");
+                    fileWriter.write("He" + "\n");
+                }
+                for(Particle p: corners) {
                     fileWriter.write(p.getX() + "\t");
                     fileWriter.write(p.getY() + "\t");
                     fileWriter.write(p.getRadius() + "\t");

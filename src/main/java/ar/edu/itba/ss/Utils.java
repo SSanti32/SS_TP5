@@ -9,8 +9,8 @@ public class Utils {
     public static double farTargetLength = 3;
 
     public static int particleCount = 200;
-    public static double x_e1 = 0.5 * wallLength - 0.5 * targetLength;
-    public static double x_e2 = 0.5 * wallLength + 0.5 * targetLength;
+    public static double x_e1 = 0.5 * wallLength - 0.5 * (targetLength - 0.2);
+    public static double x_e2 = 0.5 * wallLength + 0.5 * (targetLength - 0.2);
 
     public static double targetY = 0.0;
     public static double secondTargetX1 = wallLength / 2 - farTargetLength / 2;
