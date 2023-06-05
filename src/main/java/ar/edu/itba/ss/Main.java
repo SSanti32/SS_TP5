@@ -64,7 +64,7 @@ public class Main {
 
     private static void simulate(FileWriter fileWriter) throws IOException {
         int toPrint = 0;
-        while (particles.size() > 0 && currentTime < 500) {
+        while (particles.size() > 0) {
 
             // Find contacts
             for (Particle p1 : particles) {
@@ -84,7 +84,6 @@ public class Main {
                 if (p.getContacts().size() > 0 || p.getWallsInContact().size() > 0) {
                     p.setRadius(Utils.minRadius);
                 } else {
-//                    if (p.radius < Utils.maxRadius)
                         p.updateRadius();
                 }
             }
@@ -102,7 +101,7 @@ public class Main {
 
             // Check if particles have left the room
             for (Particle p : particles) {
-                if (p.hasLeftBox && p.getY() - p.radius <= Utils.secondTargetY) {
+                if (p.getY() - p.radius <= Utils.secondTargetY) {
                     particlesToRemove.add(p);
                 }
             }

@@ -97,7 +97,7 @@ public class Particle {
         if (x + radius >= Utils.wallLength)
             wallsInContact.add(new Wall(Utils.wallLength, y));
         // In this case, take into account the exit
-        if (y - radius <= 0 && (x < Utils.x_e1 || x > Utils.x_e2))
+        if (y - radius <= 0 && (x + radius < Utils.x_e1 || x - radius > Utils.x_e2))
             wallsInContact.add(new Wall(x, 0));
         if (y + radius >= Utils.wallLength)
             wallsInContact.add(new Wall(x, Utils.wallLength));
