@@ -12,7 +12,12 @@ public class Main {
     private static double currentTime = 0;
     public static List<Particle> particles = new ArrayList<>();
     public static List<Particle> corners = new ArrayList<>();
+
+    public static List<Particle> targets = new ArrayList<>();
+
     public static List<Particle> particlesToRemove = new ArrayList<>();
+
+    public static Map<Double, Integer> particlesPerTime = new TreeMap<>();
 
     public static void initializeRoom() {
         for(int i = 0; i < Utils.particleCount;) {
@@ -28,8 +33,11 @@ public class Main {
         corners.add(new Particle(0, Utils.wallLength, Utils.minRadius, 0));
         corners.add(new Particle(Utils.wallLength, 0, Utils.minRadius, 0));
         corners.add(new Particle(Utils.wallLength, Utils.wallLength, Utils.minRadius, 0));
-        corners.add(new Particle(Utils.secondTargetX1, Utils.secondTargetY, Utils.minRadius, 0));
-        corners.add(new Particle(Utils.secondTargetX2, Utils.secondTargetY, Utils.minRadius, 0));
+
+        targets.add(new Particle(Utils.x_e1, Utils.targetY, Utils.minRadius, 0));
+        targets.add(new Particle(Utils.x_e2, Utils.targetY, Utils.minRadius, 0));
+        targets.add(new Particle(Utils.secondTargetX1, Utils.secondTargetY, Utils.minRadius, 0));
+        targets.add(new Particle(Utils.secondTargetX2, Utils.secondTargetY, Utils.minRadius, 0));
     }
 
     public static boolean isOverlapping(Particle p1) {
@@ -44,7 +52,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         initializeRoom();
         FileWriter fileWriter = new FileWriter(FILENAME, true);
-        fileWriter.write((particles.size() + corners.size()) + "\n");
+        fileWriter.write((particles.size() + corners.size() + targets.size()) + "\n");
         fileWriter.write("Comment" + "\n");
         for(Particle p: particles) {
             fileWriter.write(p.getX() + "\t");
@@ -58,14 +66,21 @@ public class Main {
             fileWriter.write(p.getRadius() + "\t");
             fileWriter.write("He" + "\n");
         }
+        for(Particle p: targets) {
+            fileWriter.write(p.getX() + "\t");
+            fileWriter.write(p.getY() + "\t");
+            fileWriter.write(p.getRadius() + "\t");
+            fileWriter.write("Na" + "\n");
+        }
         simulate(fileWriter);
         fileWriter.close();
+
+        particlesPerTime.forEach((key, value) -> System.out.println(key + ":" + value));
     }
 
     private static void simulate(FileWriter fileWriter) throws IOException {
         int toPrint = 0;
         while (particles.size() > 0) {
-
             // Find contacts
             for (Particle p1 : particles) {
                 Set<Particle> contacts = new HashSet<>();
@@ -105,6 +120,7 @@ public class Main {
                     particlesToRemove.add(p);
                 }
             }
+            particlesPerTime.put(currentTime, particlesToRemove.size());
 
             // Remove particles that have left the room
             particles.removeAll(particlesToRemove);
@@ -112,7 +128,7 @@ public class Main {
             // Update time
             currentTime += Utils.step;
             if (toPrint % 10 == 0) {
-                fileWriter.write((particles.size() + corners.size()) + "\n");
+                fileWriter.write((particles.size() + corners.size() + targets.size()) + "\n");
                 fileWriter.write("Comment" + "\n");
                 for(Particle p: particles) {
                     fileWriter.write(p.getX() + "\t");
@@ -125,6 +141,12 @@ public class Main {
                     fileWriter.write(p.getY() + "\t");
                     fileWriter.write(p.getRadius() + "\t");
                     fileWriter.write("He" + "\n");
+                }
+                for(Particle p: targets) {
+                    fileWriter.write(p.getX() + "\t");
+                    fileWriter.write(p.getY() + "\t");
+                    fileWriter.write(p.getRadius() + "\t");
+                    fileWriter.write("Na" + "\n");
                 }
             }
             toPrint++;

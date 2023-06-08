@@ -1,7 +1,6 @@
 package ar.edu.itba.ss;
 
 public class Utils {
-    public static int N = 200;
 
     public static double wallLength = 20.0;
     // variable parameter: 1.2, 1.8, 2.4, 3.0 -> default: 1.2
@@ -20,7 +19,6 @@ public class Utils {
     public static double minRadius = 0.1;
     public static double maxRadius = 0.37;
     public static double beta = 0.9;
-    public static double maxSpeed = 0.95;
     public static double maxDesiredSpeed = 2.0;
 
     // TODO: Check value of escape speed
