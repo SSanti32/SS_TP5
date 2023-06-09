@@ -7,6 +7,7 @@ import java.util.*;
 public class Main {
     public static final String FILENAME = "animation-1-step.txt";
     public static final String POSITIONS_FILENAME = "positions-1-step.txt";
+    public static final String FLOW_RATE_FILENAME = "flow-rate-d" + Utils.targetLength + "-N" + Utils.particleCount + ".txt";
     public final static String RESOURCES_PATH_SYSTEM = "src/main/java/resources/";
 
     private static double currentTime = 0;
@@ -75,11 +76,25 @@ public class Main {
         simulate(fileWriter);
         fileWriter.close();
 
-        particlesPerTime.forEach((key, value) -> System.out.println(key + ":" + value));
+        FileWriter flowRateWriter = new FileWriter(FLOW_RATE_FILENAME, true);
+        particlesPerTime.forEach((key, value) -> {
+            try {
+                flowRateWriter.write(key + "\t" + value + "\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        flowRateWriter.close();
+
+//        for (Map.Entry<Double, Integer> entry : particlesPerTime.entrySet()) {
+//            System.out.println(entry.getKey() + " " + entry.getValue());
+//        }
     }
 
     private static void simulate(FileWriter fileWriter) throws IOException {
         int toPrint = 0;
+        int toRemoveCount = 0;
+        particlesPerTime.put(currentTime, particlesToRemove.size());
         while (particles.size() > 0) {
             // Find contacts
             for (Particle p1 : particles) {
@@ -108,7 +123,7 @@ public class Main {
                 p.calculateVelocity();
                 p.calculatePosition();
                 // Recalculate target
-                if (p.hasLeftBox)
+                if (p.hasLeftBox /*&& p.getY() - p.radius < 0*/)
                     p.calculateTargetOutsideRoom();
                 else
                     p.calculateTarget();
@@ -120,7 +135,10 @@ public class Main {
                     particlesToRemove.add(p);
                 }
             }
-            particlesPerTime.put(currentTime, particlesToRemove.size());
+            if (particlesToRemove.size() != toRemoveCount) {
+                toRemoveCount = particlesToRemove.size();
+                particlesPerTime.put(currentTime, particlesToRemove.size());
+            }
 
             // Remove particles that have left the room
             particles.removeAll(particlesToRemove);
@@ -151,6 +169,7 @@ public class Main {
             }
             toPrint++;
         }
+//        particlesPerTime.put(currentTime, particlesToRemove.size());
     }
 
 }
