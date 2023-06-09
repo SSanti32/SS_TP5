@@ -1,10 +1,10 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 
-sheets = ["200", "260", "320", "380"]
-labels = ["d=1.2, N=200", "d=1.8, N=260", "d=2.4, N=320", "d=3.0, N=380"]
-colors = ["tab:blue", "tab:orange", "tab:green", "tab:red"]
-error_colors = ["lightblue", "peachpuff", "lightgreen", "lightcoral"]
+sheets = ["200-1", "200-2", "200-3", "200-4", "200-5"]
+labels = ["v=1m/s", "v=2m/s", "v=3m/s", "v=4m/s", "v=5m/s"]
+colors = ["tab:blue", "tab:orange", "tab:green", "tab:red", "tab:pink"]
+error_colors = ["lightblue", "peachpuff", "lightgreen", "lightcoral", "lightpink"]
 index = 0
 
 for sheet in sheets:

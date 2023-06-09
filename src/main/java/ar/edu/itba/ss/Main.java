@@ -139,10 +139,9 @@ public class Main {
                 toRemoveCount = particlesToRemove.size();
                 particlesPerTime.put(currentTime, particlesToRemove.size());
             }
-
+            particlesPerTime.put(currentTime, particlesToRemove.size());
             // Remove particles that have left the room
             particles.removeAll(particlesToRemove);
-
             // Update time
             currentTime += Utils.step;
             if (toPrint % 10 == 0) {
@@ -168,8 +167,9 @@ public class Main {
                 }
             }
             toPrint++;
+
         }
-//        particlesPerTime.put(currentTime, particlesToRemove.size());
+        particlesPerTime.forEach((key, value) -> System.out.println(key + ":" + value));
     }
 
 }

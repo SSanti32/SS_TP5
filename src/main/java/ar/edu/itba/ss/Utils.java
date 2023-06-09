@@ -19,7 +19,7 @@ public class Utils {
     public static double minRadius = 0.1;
     public static double maxRadius = 0.37;
     public static double beta = 0.9;
-    public static double maxDesiredSpeed = 2.0;
+    public static double maxDesiredSpeed = 1.0;
 
     // TODO: Check value of escape speed
     public static double step = minRadius / (2 * maxDesiredSpeed);
