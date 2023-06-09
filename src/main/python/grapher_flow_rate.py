@@ -27,20 +27,34 @@ caudal2 = np.array([None] * 69)
 caudal3 = np.array([None] * 69)
 caudal4 = np.array([None] * 69)
 
-calculate_caudal(flow_rate_1, caudal1, 5)
-calculate_caudal(flow_rate_2, caudal2, 5)
-calculate_caudal(flow_rate_3, caudal3, 5)
-calculate_caudal(flow_rate_4, caudal4, 5)
+calculate_caudal(flow_rate_1, caudal1, 10)
+calculate_caudal(flow_rate_2, caudal2, 10)
+calculate_caudal(flow_rate_3, caudal3, 10)
+calculate_caudal(flow_rate_4, caudal4, 10)
+
+fig, ax = plt.subplots()
+
+ax.errorbar(np.arange(0, 69), caudal1, label="d=1.2", fmt='o', color='tab:blue', capsize=0, linewidth=0.01)
+ax.errorbar(np.arange(0, 69), caudal2, label="d=1.8", fmt='o', color='tab:orange', capsize=0, linewidth=0.01)
+ax.errorbar(np.arange(0, 69), caudal3, label="d=2.4", fmt='o', color='tab:green', capsize=0, linewidth=0.01)
+ax.errorbar(np.arange(0, 69), caudal4, label="d=3.0", fmt='o', color='tab:red', capsize=0, linewidth=0.01)
+
+plt.ylabel("Q (1/m/s)")
+plt.xlabel("Tiempo (s)")
+plt.legend(loc='upper left')
+
+plt.show()
+
 
 # ----------------------------------------------
 # ----------------------------------------------
 
 # caudal medio en funcion del ancho de la puerta d
 
-caudal1_20_50 = np.array([None] * 26)
-caudal2_20_50 = np.array([None] * 26)
-caudal3_20_50 = np.array([None] * 26)
-caudal4_20_50 = np.array([None] * 26)
+caudal1_20_50 = np.array([0] * 26)
+caudal2_20_50 = np.array([0] * 26)
+caudal3_20_50 = np.array([0] * 26)
+caudal4_20_50 = np.array([0] * 26)
 
 for i in range(30, 56):
     caudal1_20_50[i-30] = caudal1[i]
@@ -48,12 +62,12 @@ for i in range(30, 56):
     caudal3_20_50[i-30] = caudal3[i]
     caudal4_20_50[i-30] = caudal4[i]
 
-# plt.errorbar([1.2, 1.8, 2.4, 3.0], [np.mean(caudal1_20_50), np.mean(caudal2_20_50), np.mean(caudal3_20_50), np.mean(caudal4_20_50)], [np.std(caudal1_20_50), np.std(caudal2_20_50), np.std(caudal3_20_50), np.std(caudal4_20_50)], fmt='o', linewidth=2)
+plt.errorbar([1.2, 1.8, 2.4, 3.0], [np.mean(caudal1_20_50), np.mean(caudal2_20_50), np.mean(caudal3_20_50), np.mean(caudal4_20_50)], [np.std(caudal1_20_50), np.std(caudal2_20_50), np.std(caudal3_20_50), np.std(caudal4_20_50)], fmt='.', linewidth=0.5)
 
-# plt.ylabel("Q (1/m/s)")
-# plt.xlabel("d (m)")
+plt.ylabel("Q (1/m/s)")
+plt.xlabel("d (m)")
 
-# plt.show()
+plt.show()
 
 x = [1.2, 1.8, 2.4, 3.0]
 y = [np.mean(caudal1_20_50), np.mean(caudal2_20_50), np.mean(caudal3_20_50), np.mean(caudal4_20_50)]

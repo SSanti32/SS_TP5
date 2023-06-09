@@ -16,7 +16,7 @@ def calculate_flow_rate(filename):
 def calculate_caudal(flow, caudal, interval):
     for num in np.mean(flow, axis=0):
         for possible_values in range(0,69):
-                if (num > possible_values and num < 5 + possible_values):
-                    if caudal[possible_values] is None:
+                if (num > possible_values and num < interval + possible_values):
+                    if caudal[possible_values] == 0 or caudal[possible_values] is None:
                             caudal[possible_values] = 0
                     caudal[possible_values] += 1/interval
