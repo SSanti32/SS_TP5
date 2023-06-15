@@ -150,7 +150,7 @@ public class Main {
                 for(Particle p: particles) {
                     fileWriter.write(p.getX() + "\t");
                     fileWriter.write(p.getY() + "\t");
-                    fileWriter.write(Utils.minRadius + "\t");
+                    fileWriter.write(p.radius + "\t");
                     fileWriter.write("He" + "\n");
                 }
                 for(Particle p: corners) {

@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from utils import *
+from decimal import Decimal
 
 # Flow rate curve for different door widths
 
@@ -27,10 +28,10 @@ caudal2 = np.array([None] * 69)
 caudal3 = np.array([None] * 69)
 caudal4 = np.array([None] * 69)
 
-calculate_caudal(flow_rate_1, caudal1, 10)
-calculate_caudal(flow_rate_2, caudal2, 10)
-calculate_caudal(flow_rate_3, caudal3, 10)
-calculate_caudal(flow_rate_4, caudal4, 10)
+calculate_caudal(flow_rate_1, caudal1, 5)
+calculate_caudal(flow_rate_2, caudal2, 5)
+calculate_caudal(flow_rate_3, caudal3, 5)
+calculate_caudal(flow_rate_4, caudal4, 5)
 
 fig, ax = plt.subplots()
 
@@ -51,10 +52,10 @@ plt.show()
 
 # caudal medio en funcion del ancho de la puerta d
 
-caudal1_20_50 = np.array([0] * 26)
-caudal2_20_50 = np.array([0] * 26)
-caudal3_20_50 = np.array([0] * 26)
-caudal4_20_50 = np.array([0] * 26)
+caudal1_20_50 = np.array([None] * 26)
+caudal2_20_50 = np.array([None] * 26)
+caudal3_20_50 = np.array([None] * 26)
+caudal4_20_50 = np.array([None] * 26)
 
 for i in range(30, 56):
     caudal1_20_50[i-30] = caudal1[i]
@@ -69,17 +70,68 @@ plt.xlabel("d (m)")
 
 plt.show()
 
-x = [1.2, 1.8, 2.4, 3.0]
-y = [np.mean(caudal1_20_50), np.mean(caudal2_20_50), np.mean(caudal3_20_50), np.mean(caudal4_20_50)]
+# ----------------------------------------------
 
-slope, intercept = np.polyfit(x, y, 1)
-regression_line = slope * np.array(x) + intercept
+# Regresion lineal
 
-plt.errorbar(x, y, yerr=[np.std(caudal1_20_50), np.std(caudal2_20_50), np.std(caudal3_20_50), np.std(caudal4_20_50)], fmt='.', linewidth=0.5)
+# Data points
+x = np.array([1.2, 1.8, 2.4, 3.0])
+y = np.array([np.mean(caudal1_20_50), np.mean(caudal2_20_50), np.mean(caudal3_20_50), np.mean(caudal4_20_50)])
+
+# Error bars
+y_err = np.array([np.std(caudal1_20_50), np.std(caudal2_20_50), np.std(caudal3_20_50), np.std(caudal4_20_50)])
+
+# Calculate the linear regression parameters manually
+n = len(x)
+sum_x = np.sum(x)
+sum_y = np.sum(y)
+sum_x_squared = np.sum(x ** 2)
+sum_xy = np.sum(x * y)
+
+slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x_squared - sum_x ** 2)
+intercept = (sum_y - slope * sum_x) / n
+
+# Regression line
+regression_line = slope * x + intercept
+
+# Plot the errorbar
+plt.errorbar(x, y, yerr=y_err, fmt='.', linewidth=0.5)
+
+print("difference: ", abs(y - regression_line))
+
+# Plot the regression line
 plt.plot(x, regression_line, color='red', linewidth=0.5, label='Regresión lineal')
 
 plt.ylabel("Q (1/m/s)")
 plt.xlabel("d (m)")
 plt.legend(loc='upper left')
+
+plt.show()
+
+# Error of the linear regression
+
+m_values = np.linspace(slope - 1, slope + 1, 100)
+errors = []
+for point_m in m_values:
+    errors.append(calculate_error(x, y, point_m))
+
+plt.plot(m_values, errors, color='tab:blue', linewidth=0.5)
+
+Show a point in the plot with its coordinates
+plt.plot(slope, calculate_error(x, y, slope), "o", color="tab:red")
+
+def annot_min(x,y, ax=None):
+    xmin = x[np.argmin(y)]
+    ymin = np.min(y)
+    text= "x={:.3f}, y={:.3f}".format(xmin, ymin)
+    if not ax:
+        ax=plt.gca()
+    bbox_props = dict(boxstyle="square,pad=0.3", fc="w", ec="k", lw=0.72)
+    ax.annotate(text, xy=(xmin - 0.27, ymin + 0.25),  bbox=bbox_props)
+
+annot_min(m_values, errors)
+
+plt.ylabel("Error de ajuste ((1/m/s)^2)")
+plt.xlabel("Parámetro de ajuste (1/m/s)")
 
 plt.show()

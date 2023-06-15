@@ -20,3 +20,16 @@ def calculate_caudal(flow, caudal, interval):
                     if caudal[possible_values] == 0 or caudal[possible_values] is None:
                             caudal[possible_values] = 0
                     caudal[possible_values] += 1/interval
+
+def calculate_error(x, y, slope):
+        mean_x = np.mean(x)
+        mean_y = np.mean(y)
+
+        intercept = mean_y - slope * mean_x
+
+        error = 0
+        for x_i in range(len(x)):
+            linear_adjust = slope * x[x_i] + intercept
+            error += np.square(y[x_i] - linear_adjust)
+
+        return error

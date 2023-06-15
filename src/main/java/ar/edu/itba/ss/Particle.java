@@ -52,7 +52,8 @@ public class Particle {
     }
 
     public void updateRadius() {
-        this.radius += Utils.maxRadius / (Utils.tao / Utils.step);
+        if (radius < Utils.maxRadius)
+            this.radius += Utils.maxRadius / (Utils.tao / Utils.step);
     }
 
     public double[] getEscapeVelocityDirAndSense(Particle other) {
